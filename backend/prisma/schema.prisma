@@ -24,6 +24,7 @@ model Memory {
     date        DateTime
     location    String?
     tags        String?
+    imageUrl    String?
     createdAt   DateTime @default(now())
 
     userId      Int
