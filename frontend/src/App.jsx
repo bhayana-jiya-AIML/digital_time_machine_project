@@ -1,16 +1,18 @@
+
 import { useState } from "react";
 import "./App.css";
 import AddMemory from "./AddMemory";
 import ViewMemory from "./ViewMemory";
+import AddJournal from "./AddJournal";
+import ViewJournal from "./ViewJournal";
 
 // Email format validation
 const isValidEmail = (value) =>
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
     value.trim()
-);
+  );
 
-// Password must contain:
-// At least 5 characters, uppercase, lowercase, number and special character
+// Password validation
 const getPasswordErrors = (value) => {
   const errors = [];
 
@@ -37,8 +39,11 @@ function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [showDashboard, setShowDashboard] = useState(false);
+
   const [showAddMemory, setShowAddMemory] = useState(false);
   const [showViewMemory, setShowViewMemory] = useState(false);
+  const [showAddJournal, setShowAddJournal] = useState(false);
+  const [showViewJournal, setShowViewJournal] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -47,12 +52,12 @@ function App() {
   const [loginMessage, setLoginMessage] = useState("");
   const [loggedInUser, setLoggedInUser] = useState(null);
 
-  // Validation state
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const passwordErrors = getPasswordErrors(password);
+
   const emailInvalid =
     email.trim().length > 0 && !isValidEmail(email);
 
@@ -192,6 +197,20 @@ function App() {
   }
 
   // =====================================================
+  // ADD JOURNAL PAGE
+  // =====================================================
+
+  if (showAddJournal && loggedInUser) {
+    return (
+      <AddJournal
+        userId={loggedInUser.id}
+        onBack={() => setShowAddJournal(false)}
+        onJournalAdded={() => setShowAddJournal(false)}
+      />
+    );
+  }
+
+  // =====================================================
   // VIEW MEMORY PAGE
   // =====================================================
 
@@ -200,6 +219,19 @@ function App() {
       <ViewMemory
         userId={loggedInUser.id}
         onBack={() => setShowViewMemory(false)}
+      />
+    );
+  }
+
+  // =====================================================
+  // VIEW JOURNAL PAGE
+  // =====================================================
+
+  if (showViewJournal && loggedInUser) {
+    return (
+      <ViewJournal
+        userId={loggedInUser.id}
+        onBack={() => setShowViewJournal(false)}
       />
     );
   }
@@ -227,6 +259,10 @@ function App() {
               onClick={() => {
                 setShowDashboard(false);
                 setLoggedInUser(null);
+                setShowAddMemory(false);
+                setShowViewMemory(false);
+                setShowAddJournal(false);
+                setShowViewJournal(false);
               }}
             >
               Log out
@@ -262,7 +298,12 @@ function App() {
             <div className="date-heart">♡</div>
           </div>
 
+          {/* DASHBOARD ACTION CARDS */}
+
           <div className="dashboard-actions">
+
+            {/* ADD MEMORY */}
+
             <div className="memory-action add-memory">
               <div className="action-icon">✦</div>
 
@@ -285,6 +326,8 @@ function App() {
               </div>
             </div>
 
+            {/* VIEW MEMORIES */}
+
             <div className="memory-action view-memory">
               <div className="action-icon">♡</div>
 
@@ -306,6 +349,55 @@ function App() {
                 </button>
               </div>
             </div>
+
+            {/* ADD JOURNAL */}
+
+            <div className="memory-action add-journal">
+              <div className="action-icon">✿</div>
+
+              <div className="action-content">
+                <span className="action-number">03</span>
+
+                <h2>Dear Diary</h2>
+
+                <p>
+                  Pour your thoughts onto a page
+                  and capture how today felt.
+                </p>
+
+                <button
+                  className="dashboard-main-button"
+                  onClick={() => setShowAddJournal(true)}
+                >
+                  Write a Journal <span>✎</span>
+                </button>
+              </div>
+            </div>
+
+            {/* VIEW JOURNALS */}
+
+            <div className="memory-action view-journal">
+              <div className="action-icon">📖</div>
+
+              <div className="action-content">
+                <span className="action-number">04</span>
+
+                <h2>My Journal Pages</h2>
+
+                <p>
+                  Open your little diary and
+                  revisit your written memories.
+                </p>
+
+                <button
+                  className="dashboard-main-button"
+                  onClick={() => setShowViewJournal(true)}
+                >
+                  View Journals <span>→</span>
+                </button>
+              </div>
+            </div>
+
           </div>
 
           <div className="dashboard-quote">
@@ -837,7 +929,9 @@ function App() {
                             : ""
                       }`}
                     >
-                      <span>{rule.valid && passwordTouched ? "✓" : "○"}</span>
+                      <span>
+                        {rule.valid && passwordTouched ? "✓" : "○"}
+                      </span>
                       {rule.label}
                     </div>
                   ))}
